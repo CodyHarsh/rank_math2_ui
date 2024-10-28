@@ -5,11 +5,13 @@ const JobForm = ({ onJobCreated }) => {
     const [url, setUrl] = useState('');
     const [error, setError] = useState(null);
     const [response, setResponse] = useState(null);
+    const [loading, setLoading] = useState(false); // Add loading state
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
         setResponse(null);
+        setLoading(true); // Set loading to true
 
         try {
             const res = await apiService.createJob(url);
@@ -18,6 +20,8 @@ const JobForm = ({ onJobCreated }) => {
             setUrl('');
         } catch (err) {
             setError(err.response?.data?.error || 'Failed to create job');
+        } finally {
+            setLoading(false); // Reset loading state
         }
     };
 
@@ -36,7 +40,9 @@ const JobForm = ({ onJobCreated }) => {
                             required 
                         />
                     </div>
-                    <button type="submit" className="btn btn-primary w-100">Create Job</button>
+                    <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+                        {loading ? 'Submitting...' : 'Create Job'}
+                    </button>
                 </form>
                 {error && <p className="text-danger">{error}</p>}
                 {response && (

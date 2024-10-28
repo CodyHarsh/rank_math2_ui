@@ -5,16 +5,20 @@ const JobStatus = () => {
     const [jobId, setJobId] = useState('');
     const [jobStatus, setJobStatus] = useState(null);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false); // Add loading state
 
     const handleFetchStatus = async () => {
         setError(null);
         setJobStatus(null);
+        setLoading(true); // Set loading to true
 
         try {
             const response = await apiService.getJobStatus(jobId);
             setJobStatus(response.data);
         } catch (err) {
             setError('Failed to fetch job status');
+        } finally {
+            setLoading(false); // Reset loading state
         }
     };
 
@@ -31,7 +35,13 @@ const JobStatus = () => {
                         placeholder="Enter Job ID" 
                         required 
                     />
-                    <button className="btn btn-success" onClick={handleFetchStatus}>Get Job Status</button>
+                    <button 
+                        className="btn btn-success" 
+                        onClick={handleFetchStatus} 
+                        disabled={loading}
+                    >
+                        {loading ? 'Loading...' : 'Get Job Status'}
+                    </button>
                 </div>
 
                 {error && <p className="text-danger">{error}</p>}
